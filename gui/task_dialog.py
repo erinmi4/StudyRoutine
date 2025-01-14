@@ -3,11 +3,16 @@ from PyQt6.QtWidgets import (QDialog, QVBoxLayout, QHBoxLayout, QLineEdit,
 from PyQt6.QtCore import Qt, QDate
 
 class TaskDialog(QDialog):
-    def __init__(self, parent=None):
+    def __init__(self, parent=None, edit_mode=False, task_data=None):
         super().__init__(parent)
-        self.setWindowTitle("添加新任务")
+        self.edit_mode = edit_mode
+        self.task_data = task_data
+        self.setWindowTitle("编辑任务" if edit_mode else "添加新任务")
         self.setup_ui()
         
+        if edit_mode and task_data:
+            self.load_task_data()
+    
     def setup_ui(self):
         layout = QVBoxLayout(self)
         
@@ -47,18 +52,24 @@ class TaskDialog(QDialog):
         button_layout.addWidget(cancel_button)
         layout.addLayout(button_layout)
     
+    def load_task_data(self):
+        """加载现有任务数据"""
+        self.name_edit.setText(self.task_data['name'])
+        index = self.priority_combo.findText(self.task_data['priority'])
+        if (index >= 0):
+            self.priority_combo.setCurrentIndex(index)
+        self.date_edit.setDate(QDate.fromString(self.task_data['deadline'], 
+                                               "yyyy-MM-dd"))
+
     def get_task_data(self):
-        """获取任务数据并进行基本验证"""
-        name = self.name_edit.text().strip()
-        if not name:
-            print("任务名称不能为空")
-            return None
-            
-        return {
-            "name": name,
+        data = {
+            "name": self.name_edit.text().strip(),
             "priority": self.priority_combo.currentText(),
             "deadline": self.date_edit.date().toString("yyyy-MM-dd")
         }
+        if self.edit_mode:
+            data['id'] = self.task_data['id']
+        return data
 
     def accept(self):
         """重写accept方法，添加验证"""
