@@ -11,8 +11,8 @@ def main():
     # 初始化应用
     app = QApplication(sys.argv)
     
-    # 创建主窗口
-    window = MainWindow()
+    # 创建主窗口，传入数据库实例
+    window = MainWindow(db)
     window.show()
     
     # 启动应用

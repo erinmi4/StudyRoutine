@@ -39,3 +39,46 @@ class Database:
         
         conn.commit()
         conn.close()
+    
+    def add_task(self, task_data):
+        """添加新任务"""
+        try:
+            conn = sqlite3.connect(self.db_file)
+            cursor = conn.cursor()
+            
+            cursor.execute('''
+            INSERT INTO tasks (name, priority, deadline, tags)
+            VALUES (?, ?, ?, ?)
+            ''', (task_data["name"].strip(), 
+                  task_data["priority"], 
+                  task_data["deadline"],
+                  task_data.get("tags", "")))
+            
+            task_id = cursor.lastrowid
+            conn.commit()
+            print(f"成功添加任务: {task_data['name']}")
+            return task_id
+            
+        except sqlite3.Error as e:
+            print(f"数据库错误: {str(e)}")
+            raise
+        finally:
+            if conn:
+                conn.close()
+
+    def get_all_tasks(self):
+        """获取所有任务"""
+        try:
+            conn = sqlite3.connect(self.db_file)
+            cursor = conn.cursor()
+            
+            cursor.execute('SELECT * FROM tasks ORDER BY created_at DESC')
+            tasks = cursor.fetchall()
+            return tasks
+            
+        except sqlite3.Error as e:
+            print(f"获取任务列表错误: {str(e)}")
+            return []
+        finally:
+            if conn:
+                conn.close()
