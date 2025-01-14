@@ -1,5 +1,5 @@
 from PyQt6.QtWidgets import (QMainWindow, QWidget, QVBoxLayout, 
-                           QPushButton, QListWidget, QLabel, QListWidgetItem)
+                           QPushButton, QListWidget, QLabel, QListWidgetItem, QHBoxLayout)
 from PyQt6.QtCore import Qt, QPropertyAnimation, QSize
 from PyQt6.QtGui import QIcon
 from .task_dialog import TaskDialog
@@ -36,12 +36,27 @@ class MainWindow(QMainWindow):
         self.task_list = QListWidget()
         layout.addWidget(self.task_list)
         
-        # 添加任务按钮
-        add_button = QPushButton()
+        # 添加任务按钮 - 修改样式
+        add_button = QPushButton("添加任务")
         add_button.setIcon(self.icons["add"])
-        add_button.setIconSize(QSize(32, 32))
-        add_button.clicked.connect(self.add_task)
-        layout.addWidget(add_button)
+        add_button.setIconSize(QSize(24, 24))
+        add_button.setFixedHeight(40)
+        add_button.setFixedWidth(200)  # 设置固定宽度
+        # 更新按钮样式
+        add_button.setStyleSheet("""
+            QPushButton {
+                font-size: 14px;
+                padding: 5px;
+                text-align: center;  /* 文字居中 */
+                margin: 0 auto;      /* 按钮水平居中 */
+            }
+        """)
+        # 创建水平布局来居中放置按钮
+        button_layout = QHBoxLayout()
+        button_layout.addStretch()
+        button_layout.addWidget(add_button)
+        button_layout.addStretch()
+        layout.addLayout(button_layout)
         
         self.setup_animations()
     
